@@ -1,7 +1,7 @@
 "use strict";
 var _a;
 Object.defineProperty(exports, "__esModule", { value: true });
-const ServicesContext_1 = require("./ServicesContext");
+const errors_1 = require("../utils/errors");
 exports.SERVICE_SETUP_CONTEXT_ACCESSOR = Symbol();
 class Service {
     constructor() {
@@ -15,7 +15,7 @@ class Service {
                     this[injection.memberName] = this.context.lookup(injection.dependency);
                 }
                 catch (e) {
-                    if (!injection.optional && e instanceof ServicesContext_1.ServiceNotFoundError) {
+                    if (!injection.optional && e instanceof errors_1.ServiceNotFoundError) {
                         throw e;
                     }
                     this[injection.memberName] = null;

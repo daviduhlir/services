@@ -1,7 +1,4 @@
 import { Service } from './Service';
-export declare class ServiceNotFoundError extends Error {
-    constructor(message: string);
-}
 export declare class ServicesContext {
     protected services: Array<Service>;
     constructor(services: Array<Service>);

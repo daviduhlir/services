@@ -1,19 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const Service_1 = require("./Service");
-class ServiceNotFoundError extends Error {
-    constructor(message) {
-        super(message);
-        const actualProto = new.target.prototype;
-        if (Object.setPrototypeOf) {
-            Object.setPrototypeOf(this, actualProto);
-        }
-        else {
-            this.__proto__ = actualProto;
-        }
-    }
-}
-exports.ServiceNotFoundError = ServiceNotFoundError;
+const errors_1 = require("../utils/errors");
 class ServicesContext {
     constructor(services) {
         this.services = services;
@@ -25,7 +13,7 @@ class ServicesContext {
             this.services.find(i => i.constructor.name === dependency) :
             this.services.find(i => i instanceof dependency);
         if (!found) {
-            throw new ServiceNotFoundError(`Context does not contains instance of ${typeof dependency === 'string' ? dependency : dependency.name}.`);
+            throw new errors_1.ServiceNotFoundError(`Context does not contains instance of ${typeof dependency === 'string' ? dependency : dependency.name}.`);
         }
         return found;
     }
