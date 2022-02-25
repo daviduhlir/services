@@ -1,5 +1,5 @@
 {
-  "name": "cluster-example",
+  "name": "services-example",
   "version": "1.0.0",
   "description": "",
   "main": "./build/index.js",
