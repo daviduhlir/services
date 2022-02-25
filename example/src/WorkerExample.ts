@@ -1,5 +1,5 @@
 import { Worker, AsObject } from '@david.uhlir/cluster';
-import { BaseService, ServicesContext } from '@david.uhlir/services';
+import { Service, ServicesContext } from '@david.uhlir/services';
 
 import { TestService1 } from './TestService1'
 import { TestService2 } from './TestService2'

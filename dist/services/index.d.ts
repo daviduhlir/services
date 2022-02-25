@@ -1,2 +1,2 @@
-export * from './BaseService';
+export * from './Service';
 export * from './ServicesContext';
