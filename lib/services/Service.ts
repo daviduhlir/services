@@ -1,4 +1,5 @@
-import { ServiceNotFoundError, ServicesContext } from './ServicesContext';
+import { ServiceNotFoundError } from '../utils/errors';
+import { ServicesContext } from './ServicesContext';
 
 export type ServiceDependecyConstructor = new (context: ServicesContext) => Service
 
