@@ -8,7 +8,6 @@ class Service {
         this[_a] = (context) => this.context = context;
     }
     resolve() {
-        console.log(this.preparedInjections);
         if (this.preparedInjections) {
             for (const injection of this.preparedInjections) {
                 try {
@@ -23,6 +22,7 @@ class Service {
             }
         }
     }
+    async initialize() { }
 }
 exports.Service = Service;
 _a = exports.SERVICE_SETUP_CONTEXT_ACCESSOR;

@@ -23,7 +23,6 @@ export class Service {
      * Resolve all injections
      */
     public resolve() {
-        console.log(this.preparedInjections)
         if (this.preparedInjections) {
             for(const injection of this.preparedInjections) {
                 try {
@@ -37,6 +36,11 @@ export class Service {
             }
         }
     }
+
+    /**
+     * Initialize method, to be overrided with your service init.
+     */
+    public async initialize() {}
 
     /**
      * Inject service decorator, this will fill in property with service reference if found

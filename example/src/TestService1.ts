@@ -5,8 +5,8 @@ export class TestService1 extends Service {
     @Service.inject(TestService2)
     protected service: TestService2;
 
-    public resolve() {
-        super.resolve();
+    public async initialize() {
+        await new Promise((resolve) => setTimeout(resolve, 1000))
         this.service.hello();
     }
 

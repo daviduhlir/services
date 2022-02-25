@@ -6,5 +6,6 @@ export declare class Service {
     private context;
     [SERVICE_SETUP_CONTEXT_ACCESSOR]: (context: ServicesContext) => ServicesContext;
     resolve(): void;
+    initialize(): Promise<void>;
     protected static inject: (dependency: string | ServiceDependecyConstructor, optional?: boolean) => (target: any, memberName: string) => void;
 }

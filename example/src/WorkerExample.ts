@@ -16,10 +16,19 @@ export class WorkerExampleFork {
         public readonly params: Params,
         public readonly master: AsObject<WorkerExample>,
     ) {
+        this.start();
+    }
+
+    public async start() {
         const serviceContext = new ServicesContext([
             new TestService1(),
             new TestService2(),
         ]);
+
+        // wait until all services is done with init
+        await serviceContext.waitForInit();
+
+        console.log('Initialized');
     }
 }
 
