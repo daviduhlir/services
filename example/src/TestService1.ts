@@ -1,19 +1,14 @@
 import { BaseService } from '@david.uhlir/services';
 import { TestService2 } from './TestService2';
 
-export class TestService1 extends BaseService<{}, {
-    service2: TestService2,
-}> {
-    constructor() {
-        super({});
-    }
+export class TestService1 extends BaseService {
+    @BaseService.inject(TestService2)
+    protected service2: TestService2;
 
-    /**
-     * Initialize will be called after context creation
-     */
-    public async initialize() {
-        this.inject(['service2']);
+    public resolve() {
+        super.resolve();
 
-        console.log('Service1 reference: ', this.context.service2);
+        console.log('Service reference', this.service2);
+        this.service2.hello();
     }
 }

@@ -1,23 +1,18 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+const BaseService_1 = require("./BaseService");
 class ServicesContext {
     constructor(services) {
         this.services = services;
-        this.initialize();
+        this.services.forEach(service => service[BaseService_1.SERVICE_SETUP_CONTEXT_ACCESSOR](this));
+        this.services.forEach(service => service.resolve());
     }
-    async initialize() {
-        this.forEachServiceSync((service) => service._internalAssignContext(this));
-        await this.forEachService((service) => service.initialize());
-    }
-    forEachService(callback) {
-        const servicesNames = Object.keys(this.services);
-        return Promise.all(servicesNames
-            .map((name) => callback(this.services[name])));
-    }
-    forEachServiceSync(callback) {
-        const servicesNames = Object.keys(this.services);
-        servicesNames
-            .forEach((name) => callback(this.services[name]));
+    lookup(dependency) {
+        const found = this.services.find(i => i instanceof dependency);
+        if (!found) {
+            throw new Error(`Context does not contains instance of requested service to be injected`);
+        }
+        return found;
     }
 }
 exports.ServicesContext = ServicesContext;

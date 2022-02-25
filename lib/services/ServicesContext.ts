@@ -1,41 +1,18 @@
-import { BaseService } from './BaseService';
+import { BaseService, SERVICE_SETUP_CONTEXT_ACCESSOR } from './BaseService';
 
-export interface ContextServices {
-    [name: string]: BaseService<any, any>;
-}
-
-export class ServicesContext<TContext extends ContextServices = {}> {
+export class ServicesContext {
     constructor(
-        public readonly services: TContext,
+        protected services: Array<BaseService>,
     ) {
-        this.initialize();
+        this.services.forEach(service => service[SERVICE_SETUP_CONTEXT_ACCESSOR](this));
+        this.services.forEach(service => service.resolve());
     }
 
-    protected async initialize() {
-        this.forEachServiceSync((service: BaseService) => service._internalAssignContext(this));
-        await this.forEachService((service: BaseService) => service.initialize());
-        await this.forEachService((service: BaseService) => service.onMounted());
-    }
-
-    /**
-     * Call async method for every each service
-     */
-    public forEachService(callback: (service: BaseService) => (Promise<void> | void)) {
-        const servicesNames = Object.keys(this.services);
-        return Promise.all(
-            servicesNames
-                .map((name) => callback(this.services[name]),
-            ),
-        );
-    }
-
-    /**
-     * Call sync method for every each service
-     */
-    public forEachServiceSync(callback: (service: BaseService) => void) {
-        const servicesNames = Object.keys(this.services);
-        servicesNames
-            .forEach((name) => callback(this.services[name]),
-        );
+    public lookup<T extends BaseService>(dependency: new (context: ServicesContext) => T) {
+        const found = this.services.find(i => i instanceof dependency);
+        if (!found) {
+            throw new Error(`Context does not contains instance of requested service to be injected`);
+        }
+        return found as T;
     }
 }

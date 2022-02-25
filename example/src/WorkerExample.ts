@@ -16,10 +16,10 @@ export class WorkerExampleFork {
         public readonly params: Params,
         public readonly master: AsObject<WorkerExample>,
     ) {
-        const serviceContext = new ServicesContext({
-            service1: new TestService1(),
-            service2: new TestService2(),
-        });
+        const serviceContext = new ServicesContext([
+            new TestService1(),
+            new TestService2(),
+        ]);
     }
 }
 

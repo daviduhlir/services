@@ -1,13 +1,9 @@
-import { ContextServices, ServicesContext } from './ServicesContext';
-import { AsUniqueArray } from '../utils/typings';
-export declare class BaseService<TConfig extends Object = {}, TDependencies extends ContextServices = {}> {
-    readonly config: TConfig;
-    private servicesContext;
-    private injectedDependecies;
-    private dependeciesProxy;
-    constructor(config?: TConfig);
-    get context(): TDependencies;
-    initialize(): Promise<void>;
-    protected inject<TDependenciesArray extends [] | (ReadonlyArray<keyof TDependencies> & AsUniqueArray<TDependenciesArray, TDependenciesArray>)>(dependecies: TDependenciesArray): Promise<void>;
-    _internalAssignContext(context: ServicesContext<TDependencies>): void;
+import { ServicesContext } from './ServicesContext';
+export declare const SERVICE_SETUP_CONTEXT_ACCESSOR: unique symbol;
+export declare class BaseService {
+    private preparedInjections;
+    private context;
+    [SERVICE_SETUP_CONTEXT_ACCESSOR]: (context: ServicesContext) => ServicesContext;
+    resolve(): void;
+    protected static inject: (dependency: new (context: ServicesContext) => BaseService) => (target: any, memberName: string) => void;
 }

@@ -1,37 +1,24 @@
 "use strict";
+var _a;
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.SERVICE_SETUP_CONTEXT_ACCESSOR = Symbol();
 class BaseService {
-    constructor(config = {}) {
-        this.config = config;
-        this.injectedDependecies = {};
-        this.dependeciesProxy = new Proxy({}, {
-            get: (target, name) => {
-                if (!this.injectedDependecies[name]) {
-                    throw new Error(`Trying to get not injected dependecy ${name}. Use inject method before.`);
-                }
-                return this.injectedDependecies[name];
-            },
-        });
+    constructor() {
+        this[_a] = (context) => this.context = context;
     }
-    get context() {
-        return this.dependeciesProxy;
-    }
-    async initialize() { }
-    async inject(dependecies) {
-        if (!this.servicesContext) {
-            throw new Error(`Trying to inject dependecies before services initialization. Use initialize method to inject dependencies.`);
-        }
-        const names = dependecies;
-        for (const name of names) {
-            if (!this.servicesContext.services[name]) {
-                throw new Error(`Dependecy ${name} of service was not found in context.`);
+    resolve() {
+        if (this.preparedInjections) {
+            for (const injection of this.preparedInjections) {
+                this[injection[0]] = this.context.lookup(injection[1]);
             }
-            this.injectedDependecies[name] = this.servicesContext.services[name];
         }
-    }
-    _internalAssignContext(context) {
-        this.servicesContext = context;
     }
 }
 exports.BaseService = BaseService;
+_a = exports.SERVICE_SETUP_CONTEXT_ACCESSOR;
+BaseService.inject = (dependency) => {
+    return (target, memberName) => {
+        target.preparedInjections = [...(target.preparedInjections ? target.preparedInjections : []), [memberName, dependency]];
+    };
+};
 //# sourceMappingURL=BaseService.js.map
