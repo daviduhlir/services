@@ -12,11 +12,6 @@ class ServicesContext {
         this.services.forEach(service => service.resolve());
         this.initializeServices();
     }
-    async initializeServices() {
-        await Promise.all(this.services.map(i => i.initialize()));
-        this.initDone = true;
-        this.internalEmitter.emit('done');
-    }
     async waitForInit() {
         return new Promise((resolve) => {
             if (this.initDone) {
@@ -33,6 +28,11 @@ class ServicesContext {
             throw new errors_1.ServiceNotFoundError(`Context does not contains instance of ${typeof dependency === 'string' ? dependency : dependency.name}.`);
         }
         return found;
+    }
+    async initializeServices() {
+        await Promise.all(this.services.map(i => i.initialize()));
+        this.initDone = true;
+        this.internalEmitter.emit('done');
     }
 }
 exports.ServicesContext = ServicesContext;
