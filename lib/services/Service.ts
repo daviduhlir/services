@@ -9,15 +9,29 @@ export const SERVICE_SETUP_CONTEXT_ACCESSOR = Symbol();
  * Base service class
  */
 export class Service {
-    private preparedInjections: {
-        memberName: string,
-        dependency: string | ServiceDependecyConstructor,
-        optional?: boolean
-    }[];
-    private context: ServicesContext;
+    /**********************************
+     *
+     * Static methods
+     *
+     **********************************/
 
-    //private accessor to setup context
-    [SERVICE_SETUP_CONTEXT_ACCESSOR] = (context: ServicesContext) => this.context = context;
+    /**
+     * Inject service decorator, this will fill in property with service reference if found
+     * @param dependency dependecy constructor
+     * @param optional will ignore errors, if service will not be found in context
+     * @returns
+     */
+     protected static inject = (dependency: string | ServiceDependecyConstructor, optional?: boolean) => {
+        return (target: any, memberName: string) => {
+            target.preparedInjections = [...(target.preparedInjections ? target.preparedInjections : []), {memberName, dependency, optional}];
+        };
+    }
+
+    /**********************************
+     *
+     * To be overrided
+     *
+     **********************************/
 
     /**
      * Resolve all injections
@@ -42,15 +56,18 @@ export class Service {
      */
     public async initialize() {}
 
-    /**
-     * Inject service decorator, this will fill in property with service reference if found
-     * @param dependency dependecy constructor
-     * @param optional will ignore errors, if service will not be found in context
-     * @returns
-     */
-    protected static inject = (dependency: string | ServiceDependecyConstructor, optional?: boolean) => {
-        return (target: any, memberName: string) => {
-            target.preparedInjections = [...(target.preparedInjections ? target.preparedInjections : []), {memberName, dependency, optional}];
-        };
-    }
+    /**********************************
+     *
+     * Internal methods
+     *
+     **********************************/
+    private preparedInjections: {
+        memberName: string,
+        dependency: string | ServiceDependecyConstructor,
+        optional?: boolean
+    }[];
+    private context: ServicesContext;
+
+    //private accessor to setup context
+    [SERVICE_SETUP_CONTEXT_ACCESSOR] = (context: ServicesContext) => this.context = context;
 }

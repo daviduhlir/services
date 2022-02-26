@@ -6,8 +6,6 @@ import { EventEmitter } from 'events';
  * Services context
  */
 export class ServicesContext {
-    protected internalEmitter: EventEmitter = new EventEmitter();
-    protected initDone: boolean = false;
     /**
      * Init with all services
      * @param services
@@ -20,14 +18,11 @@ export class ServicesContext {
         this.initializeServices();
     }
 
-    /**
-     * Internal services initializations
-     */
-    protected async initializeServices() {
-        await Promise.all(this.services.map(i => i.initialize()));
-        this.initDone = true;
-        this.internalEmitter.emit('done');
-    }
+    /**********************************
+     *
+     * Public methods
+     *
+     **********************************/
 
     /**
      * Method, that will wait until init of services is completed.
@@ -55,5 +50,23 @@ export class ServicesContext {
             throw new ServiceNotFoundError(`Context does not contains instance of ${typeof dependency === 'string' ? dependency : dependency.name}.`);
         }
         return found as T;
+    }
+
+
+    /**********************************
+     *
+     * Internal methods
+     *
+     **********************************/
+    protected internalEmitter: EventEmitter = new EventEmitter();
+    protected initDone: boolean = false;
+
+    /**
+     * Internal services initializations
+     */
+    protected async initializeServices() {
+        await Promise.all(this.services.map(i => i.initialize()));
+        this.initDone = true;
+        this.internalEmitter.emit('done');
     }
 }
