@@ -29,6 +29,12 @@ class ServicesContext {
         }
         return found;
     }
+    getAllServices() {
+        return this.services.reduce((acc, i) => ({
+            ...acc,
+            [i.constructor.name]: i,
+        }), {});
+    }
     async initializeServices() {
         await Promise.all(this.services.map(i => i.initialize()));
         this.initDone = true;

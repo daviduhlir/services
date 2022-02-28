@@ -5,13 +5,13 @@ import { EventEmitter } from 'events';
 /**
  * Services context
  */
-export class ServicesContext {
+export class ServicesContext<TServices extends Array<Service>> {
     /**
      * Init with all services
      * @param services
      */
     constructor(
-        protected services: Array<Service>,
+        protected services: TServices,
     ) {
         this.services.forEach(service => service[SERVICE_SETUP_CONTEXT_ACCESSOR](this));
         this.services.forEach(service => service.resolve());
@@ -41,7 +41,7 @@ export class ServicesContext {
      * @param dependency
      * @returns
      */
-    public lookup<T extends Service>(dependency: string | (new (context: ServicesContext) => T)) {
+    public lookup<T extends Service>(dependency: string | (new (context: ServicesContext<TServices>) => T)) {
         const found = typeof dependency === 'string' ?
             this.services.find(i => i.constructor.name === dependency) :
             this.services.find(i => i instanceof dependency);
@@ -52,6 +52,16 @@ export class ServicesContext {
         return found as T;
     }
 
+    /**
+     * Get all services as object
+     * @returns
+     */
+    public getAllServices(): {[name: string]: Service} {
+        return this.services.reduce((acc, i) => ({
+            ...acc,
+            [i.constructor.name]: i,
+        }), {});
+    }
 
     /**********************************
      *

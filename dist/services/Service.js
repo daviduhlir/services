@@ -5,13 +5,18 @@ const errors_1 = require("../utils/errors");
 exports.SERVICE_SETUP_CONTEXT_ACCESSOR = Symbol();
 class Service {
     constructor() {
-        this[_a] = (context) => this.context = context;
+        this[_a] = (context) => this._context = context;
     }
     resolve() {
         if (this.preparedInjections) {
             for (const injection of this.preparedInjections) {
                 try {
-                    this[injection.memberName] = this.context.lookup(injection.dependency);
+                    if (!injection.dependency) {
+                        this[injection.memberName] = this._context.getAllServices();
+                    }
+                    else {
+                        this[injection.memberName] = this._context.lookup(injection.dependency);
+                    }
                 }
                 catch (e) {
                     if (!injection.optional && e instanceof errors_1.ServiceNotFoundError) {
@@ -29,6 +34,11 @@ _a = exports.SERVICE_SETUP_CONTEXT_ACCESSOR;
 Service.inject = (dependency, optional) => {
     return (target, memberName) => {
         target.preparedInjections = [...(target.preparedInjections ? target.preparedInjections : []), { memberName, dependency, optional }];
+    };
+};
+Service.injectContext = () => {
+    return (target, memberName) => {
+        target.preparedInjections = [...(target.preparedInjections ? target.preparedInjections : []), { memberName }];
     };
 };
 //# sourceMappingURL=Service.js.map

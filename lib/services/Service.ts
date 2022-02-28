@@ -1,7 +1,7 @@
 import { ServiceNotFoundError } from '../utils/errors';
 import { ServicesContext } from './ServicesContext';
 
-export type ServiceDependecyConstructor = new (context: ServicesContext) => Service
+export type ServiceDependecyConstructor = new (context: ServicesContext<any>) => Service
 
 export const SERVICE_SETUP_CONTEXT_ACCESSOR = Symbol();
 
@@ -21,9 +21,21 @@ export class Service {
      * @param optional will ignore errors, if service will not be found in context
      * @returns
      */
-     protected static inject = (dependency: string | ServiceDependecyConstructor, optional?: boolean) => {
+    protected static inject = (dependency: string | ServiceDependecyConstructor, optional?: boolean) => {
         return (target: any, memberName: string) => {
             target.preparedInjections = [...(target.preparedInjections ? target.preparedInjections : []), {memberName, dependency, optional}];
+        };
+    }
+
+    /**
+     * Inject service decorator, this will fill in property with service reference if found
+     * @param dependency dependecy constructor
+     * @param optional will ignore errors, if service will not be found in context
+     * @returns
+     */
+     protected static injectContext = () => {
+        return (target: any, memberName: string) => {
+            target.preparedInjections = [...(target.preparedInjections ? target.preparedInjections : []), {memberName}];
         };
     }
 
@@ -40,7 +52,11 @@ export class Service {
         if (this.preparedInjections) {
             for(const injection of this.preparedInjections) {
                 try {
-                    this[injection.memberName] = this.context.lookup(injection.dependency);
+                    if (!injection.dependency) {
+                        this[injection.memberName] = this._context.getAllServices();
+                    } else {
+                        this[injection.memberName] = this._context.lookup(injection.dependency);
+                    }
                 } catch(e) {
                     if (!injection.optional && e instanceof ServiceNotFoundError) {
                         throw e;
@@ -66,8 +82,8 @@ export class Service {
         dependency: string | ServiceDependecyConstructor,
         optional?: boolean
     }[];
-    private context: ServicesContext;
+    private _context: ServicesContext<any>;
 
     //private accessor to setup context
-    [SERVICE_SETUP_CONTEXT_ACCESSOR] = (context: ServicesContext) => this.context = context;
+    [SERVICE_SETUP_CONTEXT_ACCESSOR] = (context: ServicesContext<any>) => this._context = context;
 }
