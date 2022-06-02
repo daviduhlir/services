@@ -1,6 +1,6 @@
 {
   "name": "@david.uhlir/services",
-  "version": "1.0.3",
+  "version": "1.0.5",
   "description": "Services",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -11,6 +11,13 @@
     "type": "git",
     "url": "git+https://github.com/daviduhlir/services.git"
   },
+  "keywords": [
+    "node",
+    "util",
+    "services",
+    "decorators",
+    "dependency"
+  ],
   "author": "David Uhlíř",
   "license": "ISC",
   "dependencies": {
