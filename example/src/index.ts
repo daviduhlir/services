@@ -1,3 +1,4 @@
-import { WorkerExample } from './WorkerExample';
+import { MasterHandler } from '@david.uhlir/cluster'
+import { ApplicationMaster } from './Application'
 
-new WorkerExample();
+MasterHandler.Initialize(() => new ApplicationMaster())
