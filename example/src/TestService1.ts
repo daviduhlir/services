@@ -1,8 +1,8 @@
-import { Service } from '@david.uhlir/services';
+import { Service, ServicesContext } from '@david.uhlir/services';
 import { TestService2 } from './TestService2';
 
 export class TestService1 extends Service {
-    @Service.inject(TestService2)
+    @ServicesContext.inject(TestService2)
     protected service: TestService2;
 
     public async initialize() {

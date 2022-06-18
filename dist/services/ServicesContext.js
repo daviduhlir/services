@@ -1,6 +1,5 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const Service_1 = require("./Service");
 const errors_1 = require("../utils/errors");
 const events_1 = require("events");
 class ServicesContext {
@@ -8,9 +7,21 @@ class ServicesContext {
         this.services = services;
         this.internalEmitter = new events_1.EventEmitter();
         this.initDone = false;
-        this.services.forEach(service => service[Service_1.SERVICE_SETUP_CONTEXT_ACCESSOR](this));
-        this.services.forEach(service => service.resolve());
-        this.initializeServices();
+        setImmediate(() => this.initializeServices());
+    }
+    static initialize(services) {
+        if (!ServicesContext.instance) {
+            ServicesContext.instance = new ServicesContext(services);
+        }
+    }
+    static async waitForInit() {
+        return ServicesContext.instance.waitForInit();
+    }
+    static lookup(dependency) {
+        return ServicesContext.instance.lookup(dependency);
+    }
+    static getAllServices() {
+        return ServicesContext.instance.getAllServices();
     }
     async waitForInit() {
         return new Promise((resolve) => {
@@ -42,4 +53,28 @@ class ServicesContext {
     }
 }
 exports.ServicesContext = ServicesContext;
+ServicesContext.inject = (dependency, optional) => {
+    return (target, memberName) => {
+        Object.defineProperty(target, memberName, {
+            get: () => {
+                try {
+                    return ServicesContext.lookup(dependency);
+                }
+                catch (e) {
+                    if (!optional && e instanceof errors_1.ServiceNotFoundError) {
+                        throw e;
+                    }
+                    return null;
+                }
+            }
+        });
+    };
+};
+ServicesContext.injectContext = () => {
+    return (target, memberName) => {
+        Object.defineProperty(target, memberName, {
+            get: () => ServicesContext.getAllServices()
+        });
+    };
+};
 //# sourceMappingURL=ServicesContext.js.map

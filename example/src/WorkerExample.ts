@@ -14,13 +14,13 @@ export class WorkerExample {
     }
 
     public async start() {
-        const serviceContext = new ServicesContext([
+        ServicesContext.initialize([
             new TestService1(),
             new TestService2(),
         ]);
 
         // wait until all services is done with init
-        await serviceContext.waitForInit();
+        await ServicesContext.waitForInit();
 
         console.log('Initialized');
     }

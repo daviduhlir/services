@@ -1,12 +1,12 @@
-import { Service } from '@david.uhlir/services';
+import { Service, ServicesContext } from '@david.uhlir/services';
 import { TestService1 } from './TestService1';
 
 export class TestService2 extends Service {
-    @Service.inject('TestService1')
+    @ServicesContext.inject('TestService1')
     protected service: TestService1;
 
-    public resolve() {
-        super.resolve();
+    public async initialize() {
+        super.initialize();
         this.service.hello();
     }
 
