@@ -9,7 +9,7 @@ like this:
 ```ts
 import { ServicesContext } from '@david.uhlir/services';
 
-const serviceContext = new ServicesContext([
+ServicesContext.initialize([
     new TestService1(),
     new TestService2(),
 ]);
@@ -22,7 +22,7 @@ import { Service } from '@david.uhlir/services';
 import { TestService2 } from './TestService2';
 
 export class TestService1 extends Service {
-    @Service.inject(TestService2)
+    @ServicesContext.inject(TestService2)
     protected service: TestService2;
 }
 ```
