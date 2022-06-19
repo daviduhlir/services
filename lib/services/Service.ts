@@ -35,7 +35,7 @@ export class Service {
    */
   protected async initialize(dependecies: Service[] = []) {
     this.waitingDependencies = dependecies
-    if (dependecies.some(d => !d || d?.waitingDependencies?.includes(this))) {
+    if (dependecies.some(d => (d?.waitingDependencies || []).includes(this))) {
       throw new Error(`ERROR Cyclic dependecies detected.`)
     }
     await Promise.all(dependecies.map(s => s.awaited()))
