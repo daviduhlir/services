@@ -22,7 +22,7 @@ class ServicesContext {
         return ServicesContext.instance.getAllServices();
     }
     async waitForInit() {
-        return await Promise.all(this.services.map(i => i.waitForInit()));
+        return await Promise.all(this.services.map(i => i.awaited()));
     }
     lookup(dependency) {
         const found = typeof dependency === 'string' ?

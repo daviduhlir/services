@@ -1,4 +1,5 @@
 import { EventEmitter } from 'events'
+import { LookupDescriptor } from './ServicesContext';
 
 export const SERVICE_INITIALIZE_ACCESSOR = Symbol()
 
@@ -12,10 +13,13 @@ export class Service {
   /**
    * Method, that will wait until init of services is completed.
    */
-  public async waitForInit() {
+  public async awaited() {
+    if (this.initDone) {
+      return this
+    }
     return new Promise((resolve) => {
       if (this.initDone) {
-        resolve(0);
+        resolve(this);
       }
       this.internalEmitter.once('done', resolve)
     });
@@ -30,7 +34,9 @@ export class Service {
   /**
    * Initialize method, to be overrided with your service init.
    */
-  public async initialize() {}
+  protected async initialize(dependecies: Service[] = []) {
+    await Promise.all(dependecies.map(s => s.awaited()))
+  }
 
   /**********************************
    *

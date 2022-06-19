@@ -1,8 +1,8 @@
 import { Service, SERVICE_INITIALIZE_ACCESSOR } from './Service'
 import { ServiceNotFoundError } from '../utils/errors'
-import { EventEmitter } from 'events'
 
 export type ServiceDependecyConstructor = new (context: ServicesContext) => Service
+export type LookupDescriptor<T extends Service = Service> = string | (new (context: ServicesContext) => T)
 
 /**
  * Services context
@@ -76,7 +76,7 @@ export class ServicesContext {
    * @param dependency
    * @returns
    */
-  public static lookup<T extends Service>(dependency: string | (new (context: ServicesContext) => T)) {
+  public static lookup<T extends Service>(dependency: LookupDescriptor<T>) {
     return ServicesContext.instance.lookup(dependency)
   }
 
@@ -109,7 +109,7 @@ export class ServicesContext {
    * Method, that will wait until init of services is completed.
    */
   protected async waitForInit() {
-    return await Promise.all(this.services.map(i => i.waitForInit()))
+    return await Promise.all(this.services.map(i => i.awaited()))
   }
 
   /**

@@ -13,15 +13,20 @@ class Service {
             this.internalEmitter.emit('done');
         };
     }
-    async waitForInit() {
+    async awaited() {
+        if (this.initDone) {
+            return this;
+        }
         return new Promise((resolve) => {
             if (this.initDone) {
-                resolve(0);
+                resolve(this);
             }
             this.internalEmitter.once('done', resolve);
         });
     }
-    async initialize() { }
+    async initialize(dependecies = []) {
+        await Promise.all(dependecies.map(s => s.awaited()));
+    }
 }
 exports.Service = Service;
 _a = exports.SERVICE_INITIALIZE_ACCESSOR;

@@ -2,7 +2,7 @@ export declare const SERVICE_INITIALIZE_ACCESSOR: unique symbol;
 export declare class Service {
     private internalEmitter;
     private initDone;
-    waitForInit(): Promise<unknown>;
-    initialize(): Promise<void>;
+    awaited(): Promise<unknown>;
+    protected initialize(dependecies?: Service[]): Promise<void>;
     [SERVICE_INITIALIZE_ACCESSOR]: () => Promise<void>;
 }
