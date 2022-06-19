@@ -1,6 +1,6 @@
-import { Service } from './Service';
-import { ServiceNotFoundError } from '../utils/errors';
-import { EventEmitter } from 'events';
+import { Service, SERVICE_INITIALIZE_ACCESSOR } from './Service'
+import { ServiceNotFoundError } from '../utils/errors'
+import { EventEmitter } from 'events'
 
 export type ServiceDependecyConstructor = new (context: ServicesContext) => Service
 
@@ -109,12 +109,7 @@ export class ServicesContext {
    * Method, that will wait until init of services is completed.
    */
   protected async waitForInit() {
-    return new Promise((resolve) => {
-      if (this.initDone) {
-        resolve(0);
-      }
-      this.internalEmitter.once('done', resolve)
-    });
+    return await Promise.all(this.services.map(i => i.waitForInit()))
   }
 
   /**
@@ -149,15 +144,11 @@ export class ServicesContext {
    * Internal methods
    *
    **********************************/
-  protected internalEmitter: EventEmitter = new EventEmitter();
-  protected initDone: boolean = false;
 
   /**
    * Internal services initializations
    */
   protected async initializeServices() {
-    await Promise.all(this.services.map(i => i.initialize()));
-    this.initDone = true;
-    this.internalEmitter.emit('done');
+    await Promise.all(this.services.map(i => i[SERVICE_INITIALIZE_ACCESSOR]()))
   }
 }

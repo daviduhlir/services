@@ -1,12 +1,10 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+const Service_1 = require("./Service");
 const errors_1 = require("../utils/errors");
-const events_1 = require("events");
 class ServicesContext {
     constructor(services) {
         this.services = services;
-        this.internalEmitter = new events_1.EventEmitter();
-        this.initDone = false;
         setImmediate(() => this.initializeServices());
     }
     static initialize(services) {
@@ -24,12 +22,7 @@ class ServicesContext {
         return ServicesContext.instance.getAllServices();
     }
     async waitForInit() {
-        return new Promise((resolve) => {
-            if (this.initDone) {
-                resolve(0);
-            }
-            this.internalEmitter.once('done', resolve);
-        });
+        return await Promise.all(this.services.map(i => i.waitForInit()));
     }
     lookup(dependency) {
         const found = typeof dependency === 'string' ?
@@ -47,9 +40,7 @@ class ServicesContext {
         }), {});
     }
     async initializeServices() {
-        await Promise.all(this.services.map(i => i.initialize()));
-        this.initDone = true;
-        this.internalEmitter.emit('done');
+        await Promise.all(this.services.map(i => i[Service_1.SERVICE_INITIALIZE_ACCESSOR]()));
     }
 }
 exports.ServicesContext = ServicesContext;
