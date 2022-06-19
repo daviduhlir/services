@@ -25,9 +25,7 @@ class ServicesContext {
         return await Promise.all(this.services.map(i => i.awaited()));
     }
     lookup(dependency) {
-        const found = typeof dependency === 'string' ?
-            this.services.find(i => i.constructor.name === dependency) :
-            this.services.find(i => i instanceof dependency);
+        const found = typeof dependency === 'string' ? this.services.find(i => i.constructor.name === dependency) : this.services.find(i => i instanceof dependency);
         if (!found) {
             throw new errors_1.ServiceNotFoundError(`Context does not contains instance of ${typeof dependency === 'string' ? dependency : dependency.name}.`);
         }
@@ -57,14 +55,14 @@ ServicesContext.inject = (dependency, optional) => {
                     }
                     return null;
                 }
-            }
+            },
         });
     };
 };
 ServicesContext.injectContext = () => {
     return (target, memberName) => {
         Object.defineProperty(target, memberName, {
-            get: () => ServicesContext.getAllServices()
+            get: () => ServicesContext.getAllServices(),
         });
     };
 };

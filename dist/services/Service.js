@@ -19,7 +19,7 @@ class Service {
         if (this.initDone) {
             return this;
         }
-        return new Promise((resolve) => {
+        return new Promise(resolve => {
             if (this.initDone) {
                 resolve(this);
             }

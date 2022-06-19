@@ -8,6 +8,7 @@ class ServiceNotFoundError extends Error {
             Object.setPrototypeOf(this, actualProto);
         }
         else {
+            ;
             this.__proto__ = actualProto;
         }
     }
