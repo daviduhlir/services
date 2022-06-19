@@ -3,25 +3,25 @@ import { EventEmitter } from 'events'
 export const SERVICE_INITIALIZE_ACCESSOR = Symbol()
 
 /**
-* Base service class
+ * Base service class
  */
 export class Service {
-  private internalEmitter: EventEmitter = new EventEmitter();
-  private initDone: boolean = false;
+  private internalEmitter: EventEmitter = new EventEmitter()
+  private initDone: boolean = false
 
   /**
    * Method, that will wait until init of services is completed.
    */
-  public async awaited() {
+  public async awaited(): Promise<this> {
     if (this.initDone) {
       return this
     }
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
       if (this.initDone) {
-        resolve(this);
+        resolve(this)
       }
       this.internalEmitter.once('done', resolve)
-    });
+    })
   }
 
   /**********************************

@@ -14,26 +14,25 @@ export class ServicesContext {
    *
    **********************************/
 
-
   /**
    * Inject service decorator, this will fill in property with service reference if found
    * @param dependency dependecy constructor
    * @param optional will ignore errors, if service will not be found in context
    * @returns
    */
-   public static inject = (dependency: string | ServiceDependecyConstructor, optional?: boolean) => {
+  public static inject = (dependency: string | ServiceDependecyConstructor, optional?: boolean) => {
     return (target: any, memberName: string) => {
       Object.defineProperty(target, memberName, {
         get: () => {
           try {
             return ServicesContext.lookup(dependency)
-          } catch(e) {
+          } catch (e) {
             if (!optional && e instanceof ServiceNotFoundError) {
-                throw e
+              throw e
             }
             return null
           }
-        }
+        },
       })
     }
   }
@@ -47,7 +46,7 @@ export class ServicesContext {
   public static injectContext = () => {
     return (target: any, memberName: string) => {
       Object.defineProperty(target, memberName, {
-        get: () => ServicesContext.getAllServices()
+        get: () => ServicesContext.getAllServices(),
       })
     }
   }
@@ -84,7 +83,7 @@ export class ServicesContext {
    * Get all services as object
    * @returns
    */
-  public static getAllServices(): {[name: string]: Service} {
+  public static getAllServices(): { [name: string]: Service } {
     return ServicesContext.instance.getAllServices()
   }
 
@@ -99,9 +98,7 @@ export class ServicesContext {
    * Init with all services
    * @param services
    */
-  protected constructor(
-    protected services: Array<Service>,
-  ) {
+  protected constructor(protected services: Array<Service>) {
     setImmediate(() => this.initializeServices())
   }
 
@@ -118,25 +115,27 @@ export class ServicesContext {
    * @returns
    */
   protected lookup<T extends Service>(dependency: string | (new (context: ServicesContext) => T)) {
-    const found = typeof dependency === 'string' ?
-      this.services.find(i => i.constructor.name === dependency) :
-      this.services.find(i => i instanceof dependency);
+    const found =
+      typeof dependency === 'string' ? this.services.find(i => i.constructor.name === dependency) : this.services.find(i => i instanceof dependency)
 
     if (!found) {
-      throw new ServiceNotFoundError(`Context does not contains instance of ${typeof dependency === 'string' ? dependency : dependency.name}.`);
+      throw new ServiceNotFoundError(`Context does not contains instance of ${typeof dependency === 'string' ? dependency : dependency.name}.`)
     }
-    return found as T;
+    return found as T
   }
 
   /**
    * Get all services as object
    * @returns
    */
-  protected getAllServices(): {[name: string]: Service} {
-    return this.services.reduce((acc, i) => ({
-      ...acc,
-      [i.constructor.name]: i,
-    }), {});
+  protected getAllServices(): { [name: string]: Service } {
+    return this.services.reduce(
+      (acc, i) => ({
+        ...acc,
+        [i.constructor.name]: i,
+      }),
+      {},
+    )
   }
 
   /**********************************
