@@ -35,7 +35,10 @@ export class Service {
    */
   protected async initialize(dependecies: Service[] = []) {
     this.waitingDependencies = dependecies
-    if (dependecies.some(d => (d?.waitingDependencies || []).includes(this))) {
+    if (dependecies.some(d => !d)) {
+      throw new Error(`ERROR Some of dependecies is not assigned. Please check if you are tring to depend on optional dependecy.`)
+    }
+    if (dependecies.some(d => d.waitingDependencies.includes(this))) {
       throw new Error(`ERROR Cyclic dependecies detected.`)
     }
     await Promise.all(dependecies.map(s => s.awaited()))
