@@ -1,5 +1,4 @@
 import { EventEmitter } from 'events'
-import { LookupDescriptor } from './ServicesContext';
 
 export const SERVICE_INITIALIZE_ACCESSOR = Symbol()
 
@@ -30,11 +29,15 @@ export class Service {
    * To be overrided
    *
    **********************************/
-
+  protected waitingDependencies: Service[] = []
   /**
    * Initialize method, to be overrided with your service init.
    */
   protected async initialize(dependecies: Service[] = []) {
+    this.waitingDependencies = dependecies
+    if (dependecies.some(d => d.waitingDependencies.includes(this))) {
+      throw new Error(`ERROR Cyclic dependecies detected.`)
+    }
     await Promise.all(dependecies.map(s => s.awaited()))
   }
 
@@ -45,6 +48,7 @@ export class Service {
    **********************************/
   [SERVICE_INITIALIZE_ACCESSOR] = async () => {
     await this.initialize()
+    this.waitingDependencies = []
     this.initDone = true
     this.internalEmitter.emit('done')
   }

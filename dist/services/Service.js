@@ -7,8 +7,10 @@ class Service {
     constructor() {
         this.internalEmitter = new events_1.EventEmitter();
         this.initDone = false;
+        this.waitingDependencies = [];
         this[_a] = async () => {
             await this.initialize();
+            this.waitingDependencies = [];
             this.initDone = true;
             this.internalEmitter.emit('done');
         };
@@ -25,6 +27,10 @@ class Service {
         });
     }
     async initialize(dependecies = []) {
+        this.waitingDependencies = dependecies;
+        if (dependecies.some(d => d.waitingDependencies.includes(this))) {
+            throw new Error(`ERROR Cyclic dependecies detected.`);
+        }
         await Promise.all(dependecies.map(s => s.awaited()));
     }
 }

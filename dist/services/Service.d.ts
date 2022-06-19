@@ -3,6 +3,7 @@ export declare class Service {
     private internalEmitter;
     private initDone;
     awaited(): Promise<unknown>;
+    protected waitingDependencies: Service[];
     protected initialize(dependecies?: Service[]): Promise<void>;
     [SERVICE_INITIALIZE_ACCESSOR]: () => Promise<void>;
 }
