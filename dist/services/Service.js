@@ -9,6 +9,9 @@ class Service {
         this.initDone = false;
         this.waitingDependencies = [];
         this[_a] = async () => {
+            if (this.initDone) {
+                return;
+            }
             await this.initialize();
             this.waitingDependencies = [];
             this.initDone = true;

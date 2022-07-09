@@ -50,6 +50,10 @@ export class Service {
    *
    **********************************/
   [SERVICE_INITIALIZE_ACCESSOR] = async () => {
+    if (this.initDone) {
+      return
+    }
+
     await this.initialize()
     this.waitingDependencies = []
     this.initDone = true

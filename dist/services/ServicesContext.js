@@ -4,8 +4,8 @@ const Service_1 = require("./Service");
 const errors_1 = require("../utils/errors");
 class ServicesContext {
     constructor(services) {
-        this.services = services;
-        setImmediate(() => this.initializeServices());
+        this.services = [];
+        this.addServices(services);
     }
     static initialize(services) {
         if (!ServicesContext.instance) {
@@ -20,6 +20,9 @@ class ServicesContext {
     }
     static getAllServices() {
         return ServicesContext.instance.getAllServices();
+    }
+    static addServices(services) {
+        return ServicesContext.instance.addServices(services);
     }
     async waitForInit() {
         return await Promise.all(this.services.map(i => i.awaited()));
@@ -36,6 +39,10 @@ class ServicesContext {
             ...acc,
             [i.constructor.name]: i,
         }), {});
+    }
+    addServices(services) {
+        this.services = this.services.concat(services);
+        setImmediate(() => this.initializeServices());
     }
     async initializeServices() {
         await Promise.all(this.services.map(i => i[Service_1.SERVICE_INITIALIZE_ACCESSOR]()));

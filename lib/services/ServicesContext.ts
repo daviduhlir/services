@@ -87,19 +87,27 @@ export class ServicesContext {
     return ServicesContext.instance.getAllServices()
   }
 
+  /**
+   * Add services to context
+   */
+  public static addServices(services: Array<Service>) {
+    return ServicesContext.instance.addServices(services)
+  }
+
   /**********************************
    *
    * Protected
    *
    **********************************/
   protected static instance: ServicesContext
+  protected services: Array<Service> = []
 
   /**
    * Init with all services
    * @param services
    */
-  protected constructor(protected services: Array<Service>) {
-    setImmediate(() => this.initializeServices())
+  protected constructor(services: Array<Service>) {
+    this.addServices(services)
   }
 
   /**
@@ -136,6 +144,14 @@ export class ServicesContext {
       }),
       {},
     )
+  }
+
+  /**
+   * Add services to context
+   */
+  protected addServices(services: Array<Service>) {
+    this.services = this.services.concat(services)
+    setImmediate(() => this.initializeServices())
   }
 
   /**********************************
