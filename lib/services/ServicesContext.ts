@@ -151,7 +151,7 @@ export class ServicesContext {
    */
   protected addServices(services: Array<Service>) {
     this.services = this.services.concat(services)
-    setImmediate(() => this.initializeServices())
+    setImmediate(() => this.initializeServices(services))
   }
 
   /**********************************
@@ -163,7 +163,7 @@ export class ServicesContext {
   /**
    * Internal services initializations
    */
-  protected async initializeServices() {
-    await Promise.all(this.services.map(i => i[SERVICE_INITIALIZE_ACCESSOR]()))
+  protected async initializeServices(services: Array<Service>) {
+    await Promise.all(services.map(i => i[SERVICE_INITIALIZE_ACCESSOR]()))
   }
 }

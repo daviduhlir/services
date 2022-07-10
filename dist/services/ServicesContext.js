@@ -42,10 +42,10 @@ class ServicesContext {
     }
     addServices(services) {
         this.services = this.services.concat(services);
-        setImmediate(() => this.initializeServices());
+        setImmediate(() => this.initializeServices(services));
     }
-    async initializeServices() {
-        await Promise.all(this.services.map(i => i[Service_1.SERVICE_INITIALIZE_ACCESSOR]()));
+    async initializeServices(services) {
+        await Promise.all(services.map(i => i[Service_1.SERVICE_INITIALIZE_ACCESSOR]()));
     }
 }
 exports.ServicesContext = ServicesContext;

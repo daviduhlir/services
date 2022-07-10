@@ -20,5 +20,5 @@ export declare class ServicesContext {
         [name: string]: Service;
     };
     protected addServices(services: Array<Service>): void;
-    protected initializeServices(): Promise<void>;
+    protected initializeServices(services: Array<Service>): Promise<void>;
 }
