@@ -26,7 +26,7 @@ class Service {
             if (this.initDone) {
                 resolve(this);
             }
-            this.internalEmitter.once('done', resolve);
+            this.internalEmitter.once('done', () => resolve(this));
         });
     }
     async initialize(dependecies = []) {
