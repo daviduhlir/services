@@ -101,12 +101,14 @@ export class ServicesContext {
    **********************************/
   protected static instance: ServicesContext
   protected services: Array<Service> = []
+  protected mockups: Array<{ name: string; service: Service }> = null
 
   /**
    * Init with all services
    * @param services
    */
-  protected constructor(services: Array<Service>) {
+  protected constructor(services: Array<Service>, mockups?: Array<{ name: string; service: Service }>) {
+    this.mockups = mockups || []
     this.addServices(services)
   }
 
@@ -123,6 +125,9 @@ export class ServicesContext {
    * @returns
    */
   protected lookup<T extends Service>(dependency: string | (new (context: ServicesContext) => T)) {
+    if (this.mockups && this.mockups.find(i => i.name === dependency)) {
+      return this.mockups.find(i => i.name === dependency)!.service as T
+    }
     const found =
       typeof dependency === 'string' ? this.services.find(i => i.constructor.name === dependency) : this.services.find(i => i instanceof dependency)
 
@@ -150,6 +155,19 @@ export class ServicesContext {
    * Add services to context
    */
   protected addServices(services: Array<Service>) {
+    if (this.mockups) {
+      services.forEach(j => {
+        const foundMockup = this.mockups.find(i => i.name === j.constructor.name)
+        if (foundMockup) {
+          console.info(`Service ${j.constructor.name} is mocked by ${foundMockup.service.constructor.name}.`)
+        }
+      })
+    }
+    services.forEach(i => {
+      if (this.services.find(j => j.constructor.name === i.constructor.name)) {
+        throw new Error(`Service ${i.constructor.name} already exists in context.`)
+      }
+    })
     this.services = this.services.concat(services)
     setImmediate(() => this.initializeServices(services))
   }
