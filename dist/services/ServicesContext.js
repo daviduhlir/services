@@ -3,8 +3,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const Service_1 = require("./Service");
 const errors_1 = require("../utils/errors");
 class ServicesContext {
-    constructor(services) {
+    constructor(services, mockups) {
         this.services = [];
+        this.mockups = null;
+        this.mockups = mockups || [];
         this.addServices(services);
     }
     static initialize(services) {
@@ -28,6 +30,9 @@ class ServicesContext {
         return await Promise.all(this.services.map(i => i.awaited()));
     }
     lookup(dependency) {
+        if (this.mockups && this.mockups.find(i => i.name === dependency)) {
+            return this.mockups.find(i => i.name === dependency).service;
+        }
         const found = typeof dependency === 'string' ? this.services.find(i => i.constructor.name === dependency) : this.services.find(i => i instanceof dependency);
         if (!found) {
             throw new errors_1.ServiceNotFoundError(`Context does not contains instance of ${typeof dependency === 'string' ? dependency : dependency.name}.`);
@@ -41,6 +46,19 @@ class ServicesContext {
         }), {});
     }
     addServices(services) {
+        if (this.mockups) {
+            services.forEach(j => {
+                const foundMockup = this.mockups.find(i => i.name === j.constructor.name);
+                if (foundMockup) {
+                    console.info(`Service ${j.constructor.name} is mocked by ${foundMockup.service.constructor.name}.`);
+                }
+            });
+        }
+        services.forEach(i => {
+            if (this.services.find(j => j.constructor.name === i.constructor.name)) {
+                throw new Error(`Service ${i.constructor.name} already exists in context.`);
+            }
+        });
         this.services = this.services.concat(services);
         setImmediate(() => this.initializeServices(services));
     }

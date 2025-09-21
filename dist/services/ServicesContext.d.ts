@@ -13,7 +13,14 @@ export declare class ServicesContext {
     static addServices(services: Array<Service>): void;
     protected static instance: ServicesContext;
     protected services: Array<Service>;
-    protected constructor(services: Array<Service>);
+    protected mockups: Array<{
+        name: string;
+        service: Service;
+    }>;
+    protected constructor(services: Array<Service>, mockups?: Array<{
+        name: string;
+        service: Service;
+    }>);
     protected waitForInit(): Promise<Service[]>;
     protected lookup<T extends Service>(dependency: string | (new (context: ServicesContext) => T)): T;
     protected getAllServices(): {
